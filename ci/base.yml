@@ -28,7 +28,7 @@ resources:
 - name: bldr-resource
   type: git
   source:
-    uri: https://github.com/eeyun/bldr-resource.git
+    uri: https://github.com/habitat-sh/ci-bldr-resource.git
 
 - name: bldr-release
   type: github-release
@@ -43,5 +43,5 @@ resources:
     email: (( grab meta.dockerhub.email ))
     username: (( grab meta.dockerhub.username ))
     password: (( grab meta.dockerhub.password ))
-    repository: eeyun/bldr-resource
+    repository: habitat/bldr-resource
 
