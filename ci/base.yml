@@ -1,0 +1,47 @@
+---
+meta:
+  dockerhub:
+    email: REDACTED
+    username: REDACTED
+    password: REDACTED
+  github:
+    access_token: REDACTED
+
+groups:
+- name: images
+  jobs: [build-bldr-resource-image]
+
+jobs:
+- name: build-bldr-resource-image
+  public: true
+  plan:
+  - aggregate:
+    - {get: bldr-resource, trigger: true}
+    - {get: bldr-release, trigger: true}
+  - put: bldr-resource-image
+    params:
+      build: bldr-resource
+      tag: bldr-release/version
+      tag_as_latest: true
+
+resources:
+- name: bldr-resource
+  type: git
+  source:
+    uri: https://github.com/eeyun/bldr-resource.git
+
+- name: bldr-release
+  type: github-release
+  source:
+    user:         habitat-sh
+    repository:   habitat
+    access_token: (( grab meta.github.access_token ))
+
+- name: bldr-resource-image
+  type: docker-image
+  source:
+    email: (( grab meta.dockerhub.email ))
+    username: (( grab meta.dockerhub.username ))
+    password: (( grab meta.dockerhub.password ))
+    repository: eeyun/bldr-resource
+

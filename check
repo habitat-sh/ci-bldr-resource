@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+exec 3>&1
+exec 1>&2
+
+set +x
+
+payload=$(mktemp /tmp/bldr-resource-check.XXXXXX)
+
+cat > "${payload}" <&0
+
+base_uri="https://bldr.habitat.sh/v1/depot"
+origin="$(jq -r '.source.origin' < "${payload}")"
+name="$(jq -r '.source.name' < "${payload}")"
+
+curl "${base_uri}/pkgs/${origin}/${name}/latest" 2>/dev/null | \
+  jq '[ .channels[] | { group: select(. | contains("bldr-"))}]' >&3
